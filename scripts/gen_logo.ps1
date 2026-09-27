@@ -77,16 +77,21 @@ Write-ByteArrayHeader $bannerBytes (Join-Path $root "src\web\banner_png.h") "BAN
 Write-Output "wrote src/web/banner_png.h (${bannerW}x${bannerH}, $($bannerBytes.Length) bytes)"
 
 # --- Banner.png's icon badge, cropped -> favicon / small header icon --------
-# Crop box found by hand against the 760x403 source: the icon's own rounded
-# badge, without the outer banner's border bleeding in.
-$iconCrop = New-Object System.Drawing.Rectangle 58, 42, 100, 100
+# Crop box found by hand against the 760x403 source, verified with a
+# coordinate-grid overlay (not eyeballed blind): the icon's own rounded
+# database badge, without the outer banner's border or the "US$..." row
+# below it bleeding in. The first attempt at this box was off by enough to
+# catch a slice of the outer border instead of the icon - if the icon moves
+# in a future banner revision, re-verify with a grid overlay rather than
+# guessing coordinates again.
+$iconCrop = New-Object System.Drawing.Rectangle 92, 68, 100, 80
 $iconSrc  = $bannerSrc.Clone($iconCrop, $bannerSrc.PixelFormat)
 $icon     = Resize-Bitmap $iconSrc 64 64
 $iconBytes = Png-Bytes $icon
 
 Write-ByteArrayHeader $iconBytes (Join-Path $root "src\web\logo_png.h") "LOGO_PNG" "LOGO_PNG_LEN" @(
     "64x64 PNG, cropped from the icon badge in images/Banner.png (crop box"
-    "58,42,100,100 against the 760x403 source) and served at /logo.png - used"
+    "92,68,100,80 against the 760x403 source) and served at /logo.png - used"
     "as the browser tab favicon. Regenerate with scripts/gen_logo.ps1 if the"
     "source banner changes; re-check the crop box if the icon moves within it."
 )
