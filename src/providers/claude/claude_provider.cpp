@@ -14,7 +14,7 @@ const long  SEVEN_DAY = 7L * 24 * 3600;
 void buildHeaders(const String& sessionKey, Http::Header* out) {
     out[0] = { "Cookie",     "sessionKey=" + sessionKey };
     out[1] = { "Accept",     "application/json" };
-    out[2] = { "User-Agent", "TokenUsage/0.1 (ESP32)" };
+    out[2] = { "User-Agent", "PlanUsage/0.1 (ESP32)" };
 }
 
 // Best effort: the capabilities array is not documented, so an unfamiliar

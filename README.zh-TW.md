@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/Logo.png" width="120" alt="TokenUsage logo">
+  <img src="images/Banner.png" width="480" alt="Plan Usage">
 </p>
 
-# TokenUsage
+# Plan Usage
 
 [English](README.md) | 正體中文
 
@@ -56,8 +56,8 @@ KEY 每次按下後會先等 280 毫秒，確認是否還有後續按壓，這�
 
 ## 設定流程
 
-1. 第一次開機會開一個叫 `TokenUsage` 的開放式熱點。用手機連上，captive portal 會掃描並列出附近的網路可以點選（也能手動輸入隱藏網路的名稱），**只會問 WiFi**——不問其他任何東西，因為之後要填的憑證都是上千字元的長字串，不適合在手機上打。
-2. 連上網路後，螢幕會顯示 `http://tokenusage.local`。用電腦瀏覽器打開這個網址（預設帳密是 `admin`／`admin`，可以在 Settings 裡修改）。
+1. 第一次開機會開一個叫 `Plan Usage` 的開放式熱點。用手機連上，captive portal 會掃描並列出附近的網路可以點選（也能手動輸入隱藏網路的名稱），**只會問 WiFi**——不問其他任何東西，因為之後要填的憑證都是上千字元的長字串，不適合在手機上打。
+2. 連上網路後，螢幕會顯示 `http://planusage.local`。用電腦瀏覽器打開這個網址（預設帳密是 `admin`／`admin`，可以在 Settings 裡修改）。
 3. 新增帳號。**每個登入只需要貼一次憑證**，貼完按 Discover 就會列出這把憑證能存取的所有 organization／workspace，勾選要加入的——每個勾選項目都會變成獨立的一筆，共用同一份憑證。
 
 已存的憑證一律顯示遮蔽過的樣子（例如 `sk-ant-...a3f9`），不會完整顯示。憑證欄位留空表示沿用原本存的那份。

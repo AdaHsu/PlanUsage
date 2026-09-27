@@ -141,7 +141,7 @@ Two backends, split by size:
   a real JSON sub-object on disk, round-tripped to/from the opaque string the
   `Provider` interface uses - still never parsed outside the module that
   wrote it.
-- **Everything small stays in NVS**, namespace `tokenusage`: WiFi (`w<N>s/p`
+- **Everything small stays in NVS**, namespace `planusage`: WiFi (`w<N>s/p`
   plus `wN`), device settings, and the one-int `actIdx` (active account).
 
 ## Web UI
@@ -166,20 +166,51 @@ disturb.
 
 ## Logo
 
-`images/Logo.png` is the source image. `scripts/gen_logo.ps1` regenerates
-both embedded copies whenever it changes - there is no build-time step for
-this, the generated headers are checked in like any other source file:
+Two source images in `images/`, both with "Plan Usage" baked into the
+artwork itself (drawn as part of the image, not overlaid as separate text -
+a deliberate choice, see below): `Banner.png` (760x403, admin page + README)
+and `Splash.png` (320x160, TFT boot screen - note this is authored close to
+but not exactly the screen's 320x170, `gen_logo.ps1` resizes it the rest of
+the way). `scripts/gen_logo.ps1` regenerates every embedded copy from these
+two files - there is no build-time step for this, the generated headers are
+checked in like any other source file:
 
-- `src/web/logo_png.h` - 128x128 PNG, served at `GET /logo.png`
-  (`WebUi::registerLogoRoute()`, called once by each WebServer). `brand()`
-  references it as a plain `<img>` rather than re-embedding the bytes on
-  every page render.
-- `src/ui/logo_bitmap.h` - 72x72 RGB565, drawn once by `Screens::splash()`
-  right after `Display::setRotation()` in `setup()`. Pre-blended against
-  `Ui::COLOR_BG` at generation time, since RGB565 carries no alpha channel -
-  regenerate through the script (which does this blending) rather than
-  hand-rolling a different conversion, or the glow/rounded edges will pick
+- `src/web/banner_png.h` - 480x255 PNG resized from `Banner.png`, served at
+  `GET /banner.png`. `brand()` renders it full-width (css `max-width:440px`)
+  as the admin page's header image, replacing what used to be a small icon
+  next to an `<h1>` - the banner carries the wordmark now, so there is no
+  separate text heading to keep in sync with it.
+- `src/web/logo_png.h` - 64x64 PNG, **cropped** from `Banner.png`'s icon
+  badge (crop box `58,42,100,100` against the 760x403 source - hand-found,
+  re-check it if the icon moves within a future banner revision), served at
+  `GET /logo.png` and referenced as the browser tab favicon
+  (`<link rel=icon>` in `HEAD_META`).
+- `src/ui/splash_bitmap.h` - 320x170 RGB565 resized from `Splash.png`, drawn
+  full-bleed (`pushImage(0, 0, ...)`, no centering/margin) by
+  `Screens::splash()` right after `Display::setRotation()` in `setup()`.
+  Only drawn when `Display::landscape()` - there is no portrait-shaped
+  asset, and stretching or cropping this one into 170x320 would look worse
+  than the plain background a portrait boot shows instead. Pre-blended
+  against `Ui::COLOR_BG` at generation time, since RGB565 carries no alpha
+  channel - regenerate through the script (which does this blending) rather
+  than hand-rolling a different conversion, or the rounded corners will pick
   up a hard color-key fringe.
+
+Both `registerLogoRoute()` (registers `/logo.png` and `/banner.png` despite
+the name) call sites and `WebUi::brand()` itself are code, not asset
+regeneration - only the three files above need `gen_logo.ps1` re-run when
+the source art changes.
+
+An earlier square `Logo.png` (single source, centered-icon splash, small
+inline web icon + `<h1>` text) was replaced entirely by this pair once real
+hardware showed it illegible at both target sizes - resizing a busy
+300x300 illustration down to a 26px web icon or a 72px TFT icon loses
+real information no amount of sharpening recovers. `Splash.png` and
+`Banner.png` are native-resolution, single-composition designs for their
+specific canvas instead, which is why "Plan Usage" is baked into each as
+art rather than drawn as separate overlaid text - keep that shape if either
+is revised again: dedicated art per target size, not one source scaled to
+fit everything.
 
 The script uses .NET's `System.Drawing` via `pwsh`, not ImageMagick/PIL/
 ffmpeg - none of those were available in the environment this was built in.

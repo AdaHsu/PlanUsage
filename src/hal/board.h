@@ -10,7 +10,7 @@ namespace Board {
     static const int PIN_LCD_POWER = 15;  // must be HIGH or the panel is dark on battery
     static const int PIN_BAT_ADC   = 4;   // battery voltage through a 2:1 divider
 
-    static const char* const HOSTNAME = "tokenusage";
-    static const char* const AP_SSID  = "TokenUsage";
+    static const char* const HOSTNAME = "planusage";
+    static const char* const AP_SSID  = "Plan Usage";
     static const char* const VERSION  = "0.1";
 }

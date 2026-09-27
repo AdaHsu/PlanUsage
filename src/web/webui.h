@@ -27,9 +27,11 @@ namespace WebUi {
     // own "nothing found" message for that case.
     String wifiChips(const std::vector<ScannedNetwork>& nets, const char* targetInputId);
 
-    // Registers GET /logo.png against the given server, serving the embedded
-    // PNG straight from flash. brand() references it as a plain <img>, so
-    // every page that calls brand() needs this route registered once on its
-    // WebServer - both provisioning and the admin page do their own setup.
+    // Registers GET /logo.png (64x64 favicon) and GET /banner.png (the admin
+    // page header image) against the given server, serving the embedded PNGs
+    // straight from flash. page() references /logo.png as the favicon and
+    // brand() renders /banner.png as the page header, so every page that
+    // calls either needs these routes registered once on its WebServer -
+    // both provisioning and the admin page do their own setup.
     void registerLogoRoute(WebServer& server);
 }

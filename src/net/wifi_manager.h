@@ -18,7 +18,7 @@ namespace WifiManager {
     String ssid();
     int    rssi();
 
-    // Advertises tokenusage.local so the admin page does not need the IP.
+    // Advertises planusage.local so the admin page does not need the IP.
     void startMdns(const char* hostname);
 
     // Watchdog for the main loop. Once the link has been down for

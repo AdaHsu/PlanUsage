@@ -460,7 +460,7 @@ static void applySettings() {
 
 void setup() {
     Serial.begin(115200);
-    Serial.printf("\n[boot] TokenUsage %s, wake cause=%d\n",
+    Serial.printf("\n[boot] Plan Usage %s, wake cause=%d\n",
                   Board::VERSION, (int)esp_sleep_get_wakeup_cause());
 
     pinMode(Board::PIN_KEY,  INPUT_PULLUP);

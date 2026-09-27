@@ -4,7 +4,7 @@
 #include "../core/carousel.h"
 #include "../core/settings.h"
 
-// The admin page served on the device IP (and on tokenusage.local). Account
+// The admin page served on the device IP (and on planusage.local). Account
 // rows render whatever form their provider module hands over, so this file
 // never learns what a sessionKey or an access token is.
 namespace WebConfig {

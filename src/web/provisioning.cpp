@@ -69,7 +69,7 @@ String formPage(const String& error) {
         }
         body += "</section>";
     }
-    return WebUi::page("TokenUsage setup", body);
+    return WebUi::page("Plan Usage setup", body);
 }
 
 void handleRoot() {

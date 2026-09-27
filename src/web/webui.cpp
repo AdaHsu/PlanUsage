@@ -1,10 +1,12 @@
 #include "webui.h"
 #include "../core/provider.h"  // htmlEscape()
 #include "logo_png.h"
+#include "banner_png.h"
 
 const char WebUi::HEAD_META[] =
     "<meta charset=utf-8>"
-    "<meta name=viewport content=\"width=device-width,initial-scale=1\">";
+    "<meta name=viewport content=\"width=device-width,initial-scale=1\">"
+    "<link rel=icon type=image/png href=/logo.png>";
 
 const char WebUi::STYLES[] =
     ":root{color-scheme:dark}"
@@ -12,8 +14,10 @@ const char WebUi::STYLES[] =
     "body{margin:0;padding:24px 16px;background:#080a10;color:#e8eaf0;"
     "font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}"
     ".card{max-width:760px;margin:0 auto}"
-    ".brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}"
-    ".brand h1{font-size:20px;margin:0;font-weight:600}"
+    ".brand{margin-bottom:18px;text-align:center}"
+    ".brand img{display:block;width:100%;max-width:440px;margin:0 auto;"
+    "border-radius:14px}"
+    ".brand .badge{display:inline-block;margin-top:10px}"
     ".badge{font-size:11px;letter-spacing:.06em;text-transform:uppercase;"
     "border:1px solid #3a4152;border-radius:999px;padding:2px 8px;color:#98a0b0}"
     "section{background:#11141c;border:1px solid #232838;border-radius:12px;"
@@ -68,8 +72,7 @@ String WebUi::page(const String& title, const String& body) {
 
 String WebUi::brand(const char* badge) {
     String s = "<div class=brand>";
-    s += "<img src=/logo.png width=26 height=26 alt=\"\">";
-    s += "<h1>TokenUsage</h1>";
+    s += "<img src=/banner.png alt=\"Plan Usage\">";
     if (badge) {
         s += "<span class=badge>";
         s += badge;
@@ -93,6 +96,9 @@ String WebUi::jsEscape(const String& s) {
 void WebUi::registerLogoRoute(WebServer& server) {
     server.on("/logo.png", HTTP_GET, [&server]() {
         server.send_P(200, "image/png", (const char*)LOGO_PNG, LOGO_PNG_LEN);
+    });
+    server.on("/banner.png", HTTP_GET, [&server]() {
+        server.send_P(200, "image/png", (const char*)BANNER_PNG, BANNER_PNG_LEN);
     });
 }
 

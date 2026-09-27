@@ -4,7 +4,7 @@
 #include "../hal/battery.h"
 #include "../hal/board.h"
 #include "../util/timefmt.h"
-#include "logo_bitmap.h"
+#include "splash_bitmap.h"
 
 namespace {
 
@@ -166,7 +166,7 @@ void Screens::info(const DeviceInfo& info) {
 
     g.setTextDatum(TL_DATUM);
     g.setTextColor(Ui::COLOR_ACCENT, Ui::COLOR_BG);
-    g.drawString("TokenUsage", 8, 4, 2);
+    g.drawString("Plan Usage", 8, 4, 2);
     g.setTextDatum(TR_DATUM);
     g.setTextColor(Ui::COLOR_MUTED, Ui::COLOR_BG);
     g.drawString(String("v") + Board::VERSION, W - 8, 4, 2);
@@ -320,10 +320,17 @@ void Screens::resetting() {
 
 void Screens::splash() {
     TFT_eSPI& g = Display::beginDirect();
-    int x = (g.width()  - LOGO_BITMAP_W) / 2;
-    int y = (g.height() - LOGO_BITMAP_H) / 2;
-    // On ESP32, flash is memory-mapped, so pushImage reads straight out of
-    // the PROGMEM array with no separate copy step.
-    g.pushImage(x, y, LOGO_BITMAP_W, LOGO_BITMAP_H, LOGO_BITMAP);
+    // The asset is authored full-bleed at the exact 320x170 landscape canvas
+    // size - draw it 1:1 rather than centering a smaller icon, so nothing
+    // gets scaled a second time on top of the resize already baked into
+    // scripts/gen_logo.ps1's output. beginDirect() already cleared the
+    // screen to Ui::COLOR_BG, so a portrait boot (no matching asset for that
+    // shape yet) just shows a plain background for this one frame instead of
+    // a stretched or cropped landscape image.
+    if (Display::landscape()) {
+        // On ESP32, flash is memory-mapped, so pushImage reads straight out
+        // of the PROGMEM array with no separate copy step.
+        g.pushImage(0, 0, SPLASH_BITMAP_W, SPLASH_BITMAP_H, SPLASH_BITMAP);
+    }
     Display::endDirect();
 }

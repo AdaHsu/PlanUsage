@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/Logo.png" width="120" alt="TokenUsage logo">
+  <img src="images/Banner.png" width="480" alt="Plan Usage">
 </p>
 
-# TokenUsage
+# Plan Usage
 
 English | [正體中文](README.zh-TW.md)
 
@@ -70,12 +70,12 @@ from 1 to 60 in the admin page).
 
 ## Setup
 
-1. First boot opens an open access point called `TokenUsage`. Join it from a
+1. First boot opens an open access point called `Plan Usage`. Join it from a
    phone; the captive portal scans and offers nearby networks to pick from
    (still lets you type a hidden one by hand) and asks for **WiFi only** -
    nothing else, because the credentials that come later are
    thousand-character strings.
-2. Once online the screen shows `http://tokenusage.local`. Open that from a
+2. Once online the screen shows `http://planusage.local`. Open that from a
    computer (default login `admin` / `admin`, change it under Settings).
 3. Add accounts. Paste a credential **once per login**, then press Discover to
    list every organization or workspace it can reach and tick the ones you

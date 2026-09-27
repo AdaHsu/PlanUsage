@@ -37,7 +37,7 @@ public:
 
 bool requireAuth() {
     if (server.authenticate(cfg->adminUser.c_str(), cfg->adminPassword.c_str())) return true;
-    server.requestAuthentication(BASIC_AUTH, "TokenUsage", "Authentication required");
+    server.requestAuthentication(BASIC_AUTH, "Plan Usage", "Authentication required");
     return false;
 }
 
@@ -257,7 +257,7 @@ void handleRoot() {
     body += sectionWifi();
     body += sectionDevice();
 
-    server.send(200, "text/html", WebUi::page("TokenUsage", body));
+    server.send(200, "text/html", WebUi::page("Plan Usage", body));
 }
 
 }  // namespace
@@ -319,7 +319,7 @@ String accountFormPage(const String& type, Provider& p, int editIndex,
                 "lets you add one row per organization, so a personal plan and a Teams "
                 "plan under the same login only need the credential pasted once.</p>";
     }
-    return WebUi::page("TokenUsage", body);
+    return WebUi::page("Plan Usage", body);
 }
 
 // Builds the provider the form is editing: an existing row, a row copied from
@@ -493,7 +493,7 @@ void handleAccountDiscover() {
     body += "<p class=hint>Each one becomes its own row sharing the credential you just "
             "pasted.</p></section>";
 
-    server.send(200, "text/html", WebUi::page("TokenUsage", body));
+    server.send(200, "text/html", WebUi::page("Plan Usage", body));
 }
 
 void handleAccountAddMany() {
