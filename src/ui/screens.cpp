@@ -328,6 +328,14 @@ void Screens::splash() {
     // shape yet) just shows a plain background for this one frame instead of
     // a stretched or cropped landscape image.
     if (Display::landscape()) {
+        // pushImage() reading a raw uint16_t array needs the byte order
+        // told explicitly - unlike fillRect()/drawString() elsewhere in the
+        // UI, which take a color value directly and never hit this. Without
+        // it the two bytes of each RGB565 pixel land swapped, which does not
+        // just tint the image - it scrambles the 5-6-5 bit groups across the
+        // byte boundary, so it looks like scrambled/wrong colors, not a
+        // simple color-depth or hue problem.
+        g.setSwapBytes(true);
         // On ESP32, flash is memory-mapped, so pushImage reads straight out
         // of the PROGMEM array with no separate copy step.
         g.pushImage(0, 0, SPLASH_BITMAP_W, SPLASH_BITMAP_H, SPLASH_BITMAP);
