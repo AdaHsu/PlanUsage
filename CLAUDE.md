@@ -276,7 +276,9 @@ either - don't half-implement it "for later").
 
 ## Git / publish
 
-Repo: `github.com/AdaHsu/TokenUsage` (private). Licensed **AGPL-3.0** -
+Repo: `github.com/AdaHsu/PlanUsage` (private, renamed from TokenUsage - GitHub
+redirects the old URL automatically, but update any local remote still
+pointing at `.../TokenUsage.git`). Licensed **AGPL-3.0** -
 GitHub generated this at repo creation; note it is *not* MIT like the
 upstream project this is structured after, so don't describe the two as
 having the same license. `README.md` / `README.zh-TW.md` are kept in sync
