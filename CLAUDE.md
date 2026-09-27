@@ -164,6 +164,16 @@ not happen just from opening the page. Provisioning's captive portal, by
 contrast, scans immediately on open since there is no existing connection to
 disturb.
 
+The Accounts list has a "Show" button per row (hidden on whichever row is
+already active, marked with an "on screen" pill instead) that jumps the
+device straight to that account - `POST /account/switch` ->
+`Hooks::onSwitchTo` -> `Carousel::setActiveIndex()`. That function already
+existed on `Carousel` from early on but was never wired to anything until
+this; it goes through the same settle/age fetch gates and switch-overlay
+feedback (`showSwitchFeedback()` in `main.cpp`, shared with the physical
+KEY path) a button-driven switch would, so jumping several accounts via the
+web in a row still costs no extra fetches.
+
 ## Logo
 
 Two source images in `images/`, both with "Plan Usage" baked into the

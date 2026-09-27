@@ -113,8 +113,11 @@ String sectionAccounts(const std::vector<AccountRecord>& records) {
              "one you switch to with the KEY button.</p>";
     }
 
+    bool isActive = false;
     for (size_t i = 0; i < records.size(); i++) {
         Provider* live = wheel ? wheel->at((int)i) : nullptr;
+        isActive = wheel && wheel->activeIndex() == (int)i;
+
         s += "<div class=row><div class=grow><div class=name>";
         s += htmlEscape(records[i].label.isEmpty() ? String("(unnamed)") : records[i].label);
         s += " <span class=pill>";
@@ -122,6 +125,9 @@ String sectionAccounts(const std::vector<AccountRecord>& records) {
         s += "</span>";
         if (live && !live->subLabel().isEmpty()) {
             s += " <span class=pill>" + htmlEscape(live->subLabel()) + "</span>";
+        }
+        if (isActive) {
+            s += " <span class=\"pill active\">on screen</span>";
         }
         s += "</div><div class=sub>";
         if (live && !live->credentialHint().isEmpty()) {
@@ -141,6 +147,11 @@ String sectionAccounts(const std::vector<AccountRecord>& records) {
              "<input type=hidden name=i value=" + String(i) + ">"
              "<input type=hidden name=d value=1>"
              "<button class=\"btnGhost mini\" type=submit>&darr;</button></form>";
+        if (!isActive) {
+            s += "<form class=inline method=post action=/account/switch>"
+                 "<input type=hidden name=i value=" + String(i) + ">"
+                 "<button class=\"btnGhost mini\" type=submit>Show</button></form>";
+        }
         s += "<a class=\"btn btnGhost mini\" href=\"/account/edit?i=" + String(i) + "\">Edit</a>";
         s += "<form class=inline method=post action=/account/delete "
              "onsubmit=\"return confirm('Delete this account?')\">"
@@ -564,6 +575,13 @@ void handleAccountMove() {
     redirectHome();
 }
 
+void handleAccountSwitch() {
+    if (!requireAuth()) return;
+    int i = server.arg("i").toInt();
+    if (hooks.onSwitchTo) hooks.onSwitchTo(i);
+    redirectHome();
+}
+
 }  // namespace
 
 namespace {
@@ -650,6 +668,7 @@ void WebConfig::begin(DeviceSettings* settings, Carousel* carousel, const Hooks&
     server.on("/account/addmany",   HTTP_POST, handleAccountAddMany);
     server.on("/account/delete",    HTTP_POST, handleAccountDelete);
     server.on("/account/move",      HTTP_POST, handleAccountMove);
+    server.on("/account/switch",    HTTP_POST, handleAccountSwitch);
     server.on("/wifi/scan",         HTTP_GET,  handleWifiScan);
     server.on("/wifi/add",          HTTP_POST, handleWifiAdd);
     server.on("/wifi/delete",       HTTP_POST, handleWifiDelete);

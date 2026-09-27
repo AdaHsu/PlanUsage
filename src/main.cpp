@@ -140,6 +140,18 @@ static void doFetch(bool silent = false) {
     if (!silent) redraw();
 }
 
+// Common tail for any switch, however it was triggered (button or the web
+// admin page): drop into Stats and flash the identity overlay so it is
+// obvious which account is now live, regardless of where the switch came from.
+static void showSwitchFeedback() {
+    view = View::Stats;
+    Provider* p = carousel.active();
+    if (p) {
+        Screens::switchOverlay(*p, carousel.activeIndex(), carousel.size());
+        overlayUntilMs = millis() + SWITCH_OVERLAY_MS;
+    }
+}
+
 static void nextAccount(int steps) {
     if (steps < 1) steps = 1;
     if (carousel.size() < 2) {
@@ -151,13 +163,17 @@ static void nextAccount(int steps) {
     // Walking several rows at once still costs nothing: the settle timer is
     // restarted by each step, so no account in the middle is ever fetched.
     for (int i = 0; i < steps; i++) carousel.next();
-    view = View::Stats;
+    showSwitchFeedback();
+}
 
-    Provider* p = carousel.active();
-    if (p) {
-        Screens::switchOverlay(*p, carousel.activeIndex(), carousel.size());
-        overlayUntilMs = millis() + SWITCH_OVERLAY_MS;
-    }
+// From the admin page's "Show" button - jumps straight to a chosen account
+// instead of stepping through the list one at a time. Goes through the same
+// carousel.setActiveIndex() (and so the same settle/age fetch gates) a
+// physical switch would.
+static void switchToAccount(int index) {
+    if (index < 0 || index >= carousel.size()) return;
+    carousel.setActiveIndex(index);
+    showSwitchFeedback();
 }
 
 static void toggleView() {
@@ -512,6 +528,7 @@ void setup() {
     };
     hooks.onSettingsChanged = applySettings;
     hooks.onForceRefresh    = [] { carousel.forceFetchNext(); };
+    hooks.onSwitchTo        = [](int i) { switchToAccount(i); };
     WebConfig::begin(&cfg, &carousel, hooks);
 
     if (carousel.empty()) {

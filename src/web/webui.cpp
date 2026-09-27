@@ -44,6 +44,7 @@ const char WebUi::STYLES[] =
     ".pill{font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid #2b3245;"
     "color:#98a0b0}"
     ".pill.warn{border-color:#5a2a2e;color:#f0a0a0}"
+    ".pill.active{border-color:#3d7dff;color:#8fb4ff}"
     ".hint{font-size:12px;color:#8b93a4;margin:6px 0 0}"
     ".hint code{background:#0b0e15;padding:1px 5px;border-radius:4px}"
     ".err{background:#3a1c1f;border:1px solid #5a2a2e;color:#f0a0a0;"
