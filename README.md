@@ -31,7 +31,7 @@ that ever touches the network.
 - **Connects itself.** Up to 8 WiFi networks, tried in list order (priority,
   not signal strength). Loses the link, reconnects in the background instead
   of rebooting.
-- **Any mix of accounts, up to 12.** Two personal Claude logins, a Claude
+- **Any mix of accounts.** Two personal Claude logins, a Claude
   enterprise org and three Codex accounts is a perfectly ordinary list.
   Nothing pairs vendors up or assumes how many of each you have.
 - **Only the visible account fetches.** Accounts you are not looking at run

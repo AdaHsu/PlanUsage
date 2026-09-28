@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <vector>
 
-static const int MAX_ACCOUNTS = 12;
+static const int MAX_ACCOUNTS = 99;
 
 // One row of the carousel. `settings` is an opaque JSON blob owned by the
 // provider module; the shell never looks inside it, which is what keeps
