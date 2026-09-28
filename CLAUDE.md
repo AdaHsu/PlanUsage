@@ -191,7 +191,7 @@ checked in like any other source file:
   next to an `<h1>` - the banner carries the wordmark now, so there is no
   separate text heading to keep in sync with it.
 - `src/web/logo_png.h` - 64x64 PNG, **cropped** from `Banner.png`'s icon
-  badge (crop box `58,42,100,100` against the 760x403 source - hand-found,
+  badge (crop box `92,68,100,80` against the 760x403 source - hand-found,
   re-check it if the icon moves within a future banner revision), served at
   `GET /logo.png` and referenced as the browser tab favicon
   (`<link rel=icon>` in `HEAD_META`).
@@ -226,6 +226,23 @@ The script uses .NET's `System.Drawing` via `pwsh`, not ImageMagick/PIL/
 ffmpeg - none of those were available in the environment this was built in.
 If that's no longer true, the script doesn't need to change on that account
 alone.
+
+**Finding a crop box by eyeballing a preview is slow and was wrong the first
+time** - the original `logo_png.h` favicon crop shipped, looked fine in an
+isolated 100x100 test crop, but the real `/logo.png` response (64x64, after
+the resize the pipeline actually does) caught a slice of the outer banner
+border instead of centering the icon badge. Two lessons, not one:
+
+1. **Verify the actual final asset, not an intermediate step.** A crop that
+   looks right before the resize can still be off after it - always inspect
+   the exact size/pipeline the code ships, not a convenient stand-in.
+2. **Read coordinates off a grid instead of guessing-and-checking.** Render
+   the source region upscaled (2-3x) with a coordinate grid and axis labels
+   burned in (`Graphics.DrawLine` + `DrawString` in a loop, cheap to throw
+   together in the same `pwsh`/`System.Drawing` toolchain already in use),
+   inspect that once, and read the true edges directly. This converged in
+   one pass; blind guess-render-look-adjust had already burned several
+   rounds before it found the actual bug.
 
 ## Researched, not built
 
