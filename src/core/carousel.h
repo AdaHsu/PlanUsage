@@ -31,8 +31,9 @@ public:
     void next();
     void setActiveIndex(int index);
 
-    // Refresh cadence from device settings, in minutes. A module may ask for
-    // something slower through refreshIntervalMs(); nothing can ask for faster.
+    // Refresh cadence from device settings, in minutes. A provider's own
+    // refreshIntervalMs() wins outright (faster or slower) whenever it
+    // returns something other than 0; 0 means "no opinion, use this".
     void     setRefreshMinutes(int minutes);
     uint32_t effectiveIntervalMs() const;
 

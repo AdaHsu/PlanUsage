@@ -12,6 +12,10 @@ namespace TimeFmt {
     // "now" / "3m ago" / "2h ago" / "never" — age of a cached fetch.
     String age(time_t last, time_t now);
 
+    // "2026-07-08" — UTC calendar date, for stamps worth pinning to a day
+    // rather than an "ago" that keeps sliding. "--" when t is 0/unset.
+    String date(time_t t);
+
     // "4:12" for the next-refresh countdown in the header.
     String mmss(int seconds);
 

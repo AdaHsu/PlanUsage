@@ -60,7 +60,13 @@ public:
 
     // --- data: only ever called for the account being looked at ---------
     virtual FetchResult refresh(time_t now) = 0;
-    virtual uint32_t    refreshIntervalMs() const { return 5UL * 60 * 1000; }
+    // 0 (the default) means "no opinion, use the device-wide cadence".
+    // A provider that stores its own refresh setting (in its own settings
+    // form/blob, same place a sessionKey lives) returns that value instead,
+    // and it is used exactly as given - faster or slower than the device
+    // default - because it came from an explicit per-account choice, not
+    // from the module silently overriding the user.
+    virtual uint32_t    refreshIntervalMs() const { return 0; }
     virtual bool        hasData() const = 0;
 
     // --- screen: layout is entirely the module's business ---------------

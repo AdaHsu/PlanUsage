@@ -1,11 +1,13 @@
 #include "registry.h"
 #include "../providers/claude/claude_provider.h"
+#include "../providers/claude_credits/claude_credits_provider.h"
 #include "../providers/openai/openai_provider.h"
 
 namespace {
 const std::vector<Registry::TypeInfo> kTypes = {
-    { "claude", "Claude" },
-    { "openai", "Codex"  },
+    { "claude",         "Claude"         },
+    { "claude_credits", "Claude Credits" },
+    { "openai",         "Codex"          },
 };
 }  // namespace
 
@@ -21,8 +23,9 @@ bool Registry::isKnownType(const String& typeId) {
 }
 
 std::unique_ptr<Provider> Registry::create(const String& typeId) {
-    if (typeId == "claude") return std::unique_ptr<Provider>(new ClaudeProvider());
-    if (typeId == "openai") return std::unique_ptr<Provider>(new OpenAiProvider());
+    if (typeId == "claude")         return std::unique_ptr<Provider>(new ClaudeProvider());
+    if (typeId == "claude_credits") return std::unique_ptr<Provider>(new ClaudeCreditsProvider());
+    if (typeId == "openai")         return std::unique_ptr<Provider>(new OpenAiProvider());
     return nullptr;
 }
 

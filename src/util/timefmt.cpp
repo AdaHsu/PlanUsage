@@ -41,6 +41,15 @@ String TimeFmt::age(time_t last, time_t now) {
     return String(buf);
 }
 
+String TimeFmt::date(time_t t) {
+    if (t <= 0) return String("--");
+    struct tm tmv;
+    gmtime_r(&t, &tmv);
+    char buf[12];
+    snprintf(buf, sizeof(buf), "%04d-%02d-%02d", tmv.tm_year + 1900, tmv.tm_mon + 1, tmv.tm_mday);
+    return String(buf);
+}
+
 String TimeFmt::mmss(int seconds) {
     if (seconds < 0) seconds = 0;
     char buf[12];

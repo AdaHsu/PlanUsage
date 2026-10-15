@@ -54,13 +54,16 @@ void Carousel::setRefreshMinutes(int minutes) {
 }
 
 uint32_t Carousel::effectiveIntervalMs() const {
-    uint32_t wanted = (uint32_t)refreshMin_ * 60UL * 1000UL;
     const Provider* p = providers_.empty() ? nullptr : providers_[activeIndex_].get();
     if (p) {
         uint32_t moduleWants = p->refreshIntervalMs();
-        if (moduleWants > wanted) wanted = moduleWants;
+        // 0 means the provider has no cadence of its own configured and
+        // defers to the device-wide setting; anything else is an explicit
+        // per-account choice (from that provider's own settings form) and
+        // wins outright, even when it is faster than the device default.
+        if (moduleWants > 0) return moduleWants;
     }
-    return wanted;
+    return (uint32_t)refreshMin_ * 60UL * 1000UL;
 }
 
 bool Carousel::settling(unsigned long nowMs) const {
