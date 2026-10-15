@@ -62,9 +62,16 @@ Only `providers[activeIndex]` is ever refreshed. A switch does not fetch:
    older than this.
 
 Outside a switch the cadence is `refreshMin` from device settings (default 5,
-range 1-60). A module may ask for something slower via `refreshIntervalMs()`;
-it can never ask for faster. `dueForFetch()` mutates switch state, so call it
-exactly once per tick.
+range 1-60). `refreshIntervalMs()` defaults to 0 ("no opinion, use the device
+setting"); a provider that stores its own cadence (in its own settings
+form/blob, same place a sessionKey lives) can return a nonzero value instead,
+which wins outright - faster or slower than the device default, because it
+came from an explicit per-account choice rather than the module silently
+overriding the user. (Before 2026-10 a module could only ask for slower; see
+`ClaudeCreditsProvider` for why that changed - its Extra usage balance can
+drain in minutes once draw-down starts, faster than most people would want
+the device-wide default set to.) `dueForFetch()` mutates switch state, so
+call it exactly once per tick.
 
 **A provider's `refresh()` must call `markFetched(now)` unconditionally, as
 the first thing it does** - not only on the success path. `hasFetched()`
@@ -94,6 +101,7 @@ sleep. `keyWakeOnly` / `bootWakeOnly` swallow the press that wakes the screen.
 ```
 GET https://claude.ai/api/organizations               Cookie: sessionKey=...
 GET https://claude.ai/api/organizations/{org}/usage   -> five_hour, seven_day
+GET https://claude.ai/api/organizations/{org}/prepaid/credits -> Extra usage balance
 GET https://chatgpt.com/backend-api/wham/usage        Authorization: Bearer ...
                                                       ChatGPT-Account-Id, originator
 POST https://auth.openai.com/oauth/token              refresh_token grant
@@ -128,6 +136,28 @@ Anthropic login has an auto-created default org named
 org instead, that default one will legitimately show nothing forever. Confirm
 in the claude.ai UI itself (switch to that org, check its own usage page)
 before assuming the parser or the fetch is at fault.
+
+**`/prepaid/credits` confirmed against a live response** (2026-10, Pro plan
+with Extra usage turned on). This is `ClaudeCreditsProvider`'s endpoint - a
+different private API from `/usage` above despite sharing the same
+sessionKey/orgId, which is why it is a separate provider type rather than a
+second screen on `ClaudeProvider`:
+
+```
+amount, currency                              current balance, amount in minor units
+balance.credits.{amount_minor,exponent}       same balance, self-describing decimal places
+tranches[]                                     one entry per grant (top-up), not per draw
+  { granted_at, granted_amount_minor_units, remaining_amount_minor_units,
+    expires_at, program_id }
+```
+
+No per-draw transaction log has turned up yet - `tranches[]` only reports
+grants, so there is nowhere to source a "last N draws" history today; get a
+real draw-down event and F12 whatever billing/history page claude.ai shows
+for it before building that. An account that has never enabled Extra usage
+has not been tested against this endpoint either - whether it 404s or
+returns an empty/zeroed body is unconfirmed, and `refresh()` currently
+treats any non-2xx as a plain network error rather than "no credits".
 
 ## Storage (`core/account.cpp`, `core/settings.cpp`)
 
@@ -244,18 +274,43 @@ border instead of centering the icon badge. Two lessons, not one:
    one pass; blind guess-render-look-adjust had already burned several
    rounds before it found the actual bug.
 
+## Fonts
+
+The built-in TFT_eSPI fonts (1, 2, 4, 6, 7) are bitmap fonts; `setTextSize(2)`
+on them does nearest-neighbor pixel-doubling, not a redraw, so curved glyphs
+(digits, `$`) come out visibly blocky at 2x. `platformio.ini` already sets
+`LOAD_GFXFF=1` and `SMOOTH_FONT=1` (carried over from the start, never
+exercised until `ClaudeCreditsProvider`), and TFT_eSPI's own `gfxfont.h`
+unconditionally `#include`s every `Fonts/GFXFF/*.h` the moment `LOAD_GFXFF`
+is set - so a GFXFF font such as `FreeSansBold18pt7b` is already linkable
+project-wide with no `#include` and no asset pipeline, just reference the
+symbol (`g.setFreeFont(&FreeSansBold18pt7b)` / `g.setFreeFont()` to clear it
+afterward so later numbered-font `drawString` calls are unaffected). It is
+drawn at native resolution instead of being upscaled, so it does not pick up
+the 2x blockiness. `SMOOTH_FONT` (true anti-aliased `.vlw` fonts) is a
+separate, heavier feature - it needs a font file generated and loaded at
+runtime - and is still unused; don't reach for it before trying a GFXFF size
+first.
+
 ## Researched, not built
 
 Two things were investigated in depth and deliberately not implemented -
 read this before redoing the research from scratch.
 
 **Claude / OpenAI API remaining credit balance** (the pay-as-you-go developer
-API's prepaid balance, not the subscription usage this firmware already
-shows): confirmed dead end as of 2026-09. Neither vendor exposes this through
-any API, documented or otherwise - both have open feature requests for it on
-their own GitHub repos and the balance is Console/Dashboard-web-UI-only.
-Don't spend time re-searching this; check whether either vendor has since
-shipped the feature request before trying again.
+API's prepaid balance - an organization's Console/Admin-API spend account,
+*not* the subscription usage this firmware already shows, and *not* the same
+thing as the Extra usage prepaid balance `ClaudeCreditsProvider` reads via
+`/prepaid/credits` - see Data sources above): confirmed dead end as of
+2026-09, re-confirmed 2026-10. Neither vendor exposes this through any API,
+documented or otherwise - both have open feature requests for it on their
+own GitHub repos and the balance is Console/Dashboard-web-UI-only.
+`anthropics/claude-code#47574` (filed 2026-04) asks for exactly this; it was
+auto-closed by a stale-issue bot in 2026-05, not fixed, and people were still
+confirming the gap as late as 2026-08 - a bot-closed issue is not a shipped
+feature, read the comments before trusting the closed state next time this
+gets re-checked. Don't spend time re-searching this; check whether either
+vendor has since shipped the feature request before trying again.
 
 **OpenAI API spend/usage by model** (different from the above - this is
 *already-spent* tracking, which the user considers first-class, not a
