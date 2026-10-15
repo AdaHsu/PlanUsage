@@ -66,6 +66,16 @@ KEY 每次按下後會先等 280 毫秒，確認是否還有後續按壓，這�
 
 去 claude.ai 用瀏覽器開發者工具複製 `sessionKey` 這個 cookie。一筆帳號就是一組 `(sessionKey, orgId)`；同一個登入底下的個人版跟 Teams 版是兩筆、共用同一把 sessionKey，另一個登入就是另一把獨立的 sessionKey。
 
+### Claude Credits
+
+跟上面用的是同一個 `sessionKey` cookie，但是獨立的一筆。顯示的是 claude.ai
+上 `Settings → Usage` 裡的「Extra usage」儲值餘額（個人版 Pro／Max 也適
+用，不是只有 Team／Enterprise 才有）——目前餘額、幣別，以及最近一次儲值
+的日期，低於 5 美金時會變成紅色。跟 Claude 用量那一筆不是綁在一起的：重
+新貼過期的 sessionKey 只會更新你貼進去的那一筆。可以單獨設定自己的刷新
+頻率，因為 Extra usage 一旦開始扣款，餘額可能幾分鐘內就用完——留空就跟
+裝置全域設定一樣。
+
 ### Codex／ChatGPT
 
 從 `~/.codex/auth.json` 複製 `tokens.access_token`。帳號 id 跟到期時間會直接從這個 token 本身解析出來。這個 token 大約 10 天到期，快到期時畫面會顯示警示。

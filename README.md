@@ -91,6 +91,17 @@ is one `(sessionKey, orgId)` pair, so a personal plan and a Teams plan under
 one login are two rows sharing one key, while a second login is simply its
 own key.
 
+### Claude Credits
+
+Same `sessionKey` cookie as above, added as its own row. Shows the "Extra
+usage" prepaid balance from `Settings → Usage` on claude.ai (works for
+individual Pro/Max plans too, not just Team/Enterprise) - current balance,
+currency, and the date of the last top-up, turning red under $5 USD. Not
+tied to the Claude usage row: re-pasting a rotated sessionKey updates only
+whichever row you paste it into. Has its own optional refresh interval,
+since the balance can drain within minutes once Extra usage draw-down
+starts - leave it blank to follow the device-wide setting.
+
 ### Codex / ChatGPT
 
 Copy `tokens.access_token` from `~/.codex/auth.json`. The account id and the
